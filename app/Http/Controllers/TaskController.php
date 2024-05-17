@@ -8,13 +8,21 @@ use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //query using ORm Eloquent tp get all task from Task Model
-        $tasks = Task::all();
+        //$tasks = Task::all();
+
+        //get tasks from user yg login
+        $user = auth()->user();
+        $tasks = $user->tasks;
 
         //return to view with $tasks
         //dalam resources/views/tasks/index.blade.php + $tasks
@@ -41,6 +49,7 @@ class TaskController extends Controller
         $task = new Task(); //new Task tu hasilkan new object
         $task->title = $request->title;
         $task->description = $request->description;
+        $task->user_id=auth()->user()->id;
         $task->save();
 
 

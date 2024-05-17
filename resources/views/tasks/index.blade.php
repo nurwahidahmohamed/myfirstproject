@@ -22,6 +22,7 @@
                                 <th>Task ID</th>
                                 <th>Task Title</th>
                                 <th>Task Description</th>
+                                <th>User ID</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -30,7 +31,7 @@
                                 <td>{{ $task->id}}</td>
                                 <td>{{ $task->title}}</td>
                                 <td>{{ $task->description}}</td>
-
+                                <td>{{ $task->user->name}}</td>
                             <td>
 
                                 <a href="{{ route('tasks.show', $task)}}" class="btn btn-primary">View</a>
