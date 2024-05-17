@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Http;
 
 use Illuminate\Http\Request;
 
@@ -24,6 +25,19 @@ class HomeController extends Controller
     public function index()
     {
         //home merujuk kepada resources/views/home.blade.php
-        return view('home');
+        // return view('home');
+
+        //call API http://jsonplaceholder.typicode.com/posts
+
+        $response = Http::get('http://jsonplaceholder.typicode.com/posts');
+
+        if($response->ok()){
+            $posts = $response->object();
+        } else{
+            $posts = [];
+        }
+
+        // resources/views/home.blade.php
+        return view('home', compact('posts'));
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Mail\TaskCreatedMail;
+use Illuminate\Support\Facades\Mail;
+// use Mail;
 
 class TaskController extends Controller
 {
@@ -17,12 +20,20 @@ class TaskController extends Controller
      */
     public function index()
     {
+
+        \info(auth()->user()->name.'click tasks index');
         //query using ORm Eloquent tp get all task from Task Model
         //$tasks = Task::all();
 
         //get tasks from user yg login
-        $user = auth()->user();
-        $tasks = $user->tasks;
+        // $user = auth()->user();
+        // $tasks = $user->tasks;
+
+        //use case untuk guna polisi
+        $tasks = Task::all();
+
+        \info('User has'. $tasks->count().'tasks');
+
 
         //return to view with $tasks
         //dalam resources/views/tasks/index.blade.php + $tasks
@@ -52,6 +63,8 @@ class TaskController extends Controller
         $task->user_id=auth()->user()->id;
         $task->save();
 
+        Mail::to($task->user->email)->send(new TaskCreatedMail($task));
+
 
         //return to index tasks
         return redirect()->route('tasks.index');
@@ -65,6 +78,10 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         //Task $task adalah model binding
+        $this->authorize(('view'), $task);
+        \info(auth()->user()->name.'click tasks show'. $task->id);
+
+
         return view('tasks.show', compact('task'));
     }
 
@@ -74,6 +91,7 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         //
+        Mail::to($task->user->email)->send(new TaskCreatedMail($task));
         return view('tasks.edit', compact('task'));
     }
 
@@ -83,6 +101,7 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         //tak perlu masuk $task = new Task(); sebab update ni terus masuk db
+        $this->authorize(('update'), $task);
         $task->title = $request->title;
         $task->description = $request->description;
         $task->save();
@@ -97,6 +116,7 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         //
+        $this->authorize(('delete'), $task);
         $task->delete();
 
         return redirect()->route('tasks.index');

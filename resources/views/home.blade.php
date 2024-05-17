@@ -15,6 +15,11 @@
                     @endif
 
                     {{ __('You are logged in!') }}
+
+                    <hr>
+                    @foreach ($posts as $post)
+                        <p>Title {{$post->id}} : {{$post->title}}</p>
+                    @endforeach
                 </div>
             </div>
         </div>
